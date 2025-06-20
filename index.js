@@ -9,16 +9,40 @@ const client = new Client({
   ]
 });
 
-// Komutları yükle
+client.once('ready', () => {
+  console.log(`✅ Bot ${client.user.tag} aktif!`);
+});
+
 client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  client.commands.set(command.data.name, command);
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  if ('data' in command && 'execute' in command) {
+    client.commands.set(command.data.name, command);
+  } else {
+    console.warn(`❌ Komut dosyası "${file}" geçerli bir komut değil!`);
+  }
 }
+const { REST, Routes } = require('discord.js');
+const commands = client.commands.map(command => command.data.toJSON());
+const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+(async () => {
+  try {
+    console.log('✅ Komutlar yükleniyor...');
 
-// Etkileşimleri dinle
+    await rest.put(
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+      { body: commands },
+    );
+
+    console.log('✅ Komutlar başarıyla yüklendi!');
+  } catch (error) {
+    console.error('❌ Komutlar yüklenirken hata oluştu:', error);
+  }
+})();
+
 client.on('interactionCreate', async interaction => {
   if (!interaction.isCommand()) return;
 
@@ -28,13 +52,9 @@ client.on('interactionCreate', async interaction => {
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.error(error);
-    await interaction.reply({ content: 'Bir hata oluştu.', ephemeral: true });
+    console.error('❌ Komut çalıştırılırken hata oluştu:', error);
+    await interaction.reply({ content: '❌ Bir hata oluştu!', ephemeral: true });
   }
-});
-
-client.once('ready', () => {
-  console.log(`✅ Bot ${client.user.tag} aktif!`);
 });
 
 client.login(process.env.TOKEN);
