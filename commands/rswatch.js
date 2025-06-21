@@ -14,7 +14,7 @@ module.exports = {
             .setTitle('Rasgere Watch')
             .setDescription('Rasgere Watch, SitWatchdaki Videolardan Birini Rasgere Açar.')
             .addFields(
-                { name: 'Value', value: json.toString() },
+                { name: 'Value', value: JSON.stringify(json, null, 2) },
             )
             .setColor('#5865F2')
             .setTimestamp()
