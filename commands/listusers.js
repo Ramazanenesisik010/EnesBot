@@ -7,27 +7,33 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply();
+
+    // Sunucu üyelerini çek
     const members = await interaction.guild.members.fetch();
+
+    // Üyeleri katılma tarihine göre sırala
+    const sortedMembers = Array.from(members.values())
+      .filter(member => member.joinedAt) // joinedAt varsa
+      .sort((a, b) => a.joinedAt - b.joinedAt);
+
     const now = new Date();
-
-    const fields = members.map(member => {
-      if (!member.joinedAt) return null;
-
-      const diff = now - member.joinedAt;
+    const fields = sortedMembers.map((member, index) => {
+      const joinedAt = member.joinedAt;
+      const diff = now - joinedAt;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const months = Math.floor(days / 30);
       const remainingDays = days % 30;
 
       return {
-        name: member.user.username,
-        value: `Katıldı: ${member.joinedAt.toLocaleDateString('tr-TR')}\nGeçen: ${months} ay, ${remainingDays} gün`,
+        name: `#${index + 1} ${member.user.username}`, // 👈 Sıralı ID
+        value: `Katıldı: ${joinedAt.toLocaleDateString('tr-TR')}\nGeçen: ${months} ay, ${remainingDays} gün`,
         inline: true,
       };
-    }).filter(Boolean);
+    });
 
+    // Parça parça gönder (25 alan sınırlaması var.)
     const chunkSize = 25;
 
-    // Eğer çok üye varsa embed'leri parçalar halinde gönder
     for (let i = 0; i < fields.length; i += chunkSize) {
       const chunk = fields.slice(i, i + chunkSize);
       const embed = new EmbedBuilder()
@@ -41,3 +47,4 @@ module.exports = {
     }
   },
 };
+
