@@ -14,13 +14,12 @@ module.exports = {
         .setTitle('🤖 Bot Hakkında')
         .setDescription('Bu bot, Discord sunucularında üyelerin katılım bilgilerini listelemek için tasarlanmıştır.')
         .addFields(
-            { name: 'Yapımcı', value: 'Your Name', inline: true },
+            { name: 'Yapımcı', value: 'Ramazanenescik04', inline: true },
             { name: 'Versiyon', value: version, inline: true },
-            { name: 'GitHub', value: '[GitHub Repository]', inline: true}
+            { name: 'GitHub', value: 'https://github.com/Ramazanenesisik010/EnesBot', inline: true}
         )
         .setColor('#5865F2')
-        .setTimestamp()
-        .setFooter({ text: 'Bot tarafından sağlanmıştır' });
+        .setTimestamp();
         await interaction.reply({ embeds: [embed] });
     },
 };
