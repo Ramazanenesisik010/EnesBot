@@ -1,17 +1,16 @@
-const { SlashCommandBuilder, EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rswatch')
         .setDescription('SitWatchdaki Videolardan Birini Rasgere Açar'),
     async execute(interaction) {
-        // Buton oluşturma
-        const button = new ButtonBuilder()
-            .setCustomId('randomOpenVideo')
-            .setLabel('Rasgere Aç')
-            .setStyle(ButtonStyle.Primary);
-        const row = new ActionRowBuilder().addComponents(button);
+        const json = (await fetch('https://sitwatch.net/api/videos/latest?page=1&limit=1')).json();
+        console.debug('SitWatch API Response:', json);
+        const videoId = json[0].id;
+        //const randomVideoId = Math.floor(Math.random() * videoId + 1);
 
+        //const videoUrl = `https://sitwatch.net/watch/${randomVideoId}`;
         const embed = new EmbedBuilder()
             .setTitle('Rasgere Watch')
             .setDescription('Rasgere Watch, SitWatchdaki Videolardan Birini Rasgere Açar.')
@@ -22,6 +21,6 @@ module.exports = {
             .setColor('#5865F2')
             .setTimestamp()
 
-        await interaction.reply({ embeds: [embed] , components: [row] });
+        await interaction.reply({ embeds: [embed] });
     }
 };

@@ -44,18 +44,6 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 })();
 
 client.on('interactionCreate', async interaction => {
-  if (interaction.isButton()) {
-    if (interaction.customId === 'randomOpenVideo') {
-      const json = (await fetch('https://sitwatch.net/api/videos/latest?page=1&limit=1')).json();
-      const videoId = json[0].id;
-      const randomVideoId = Math.floor(Math.random() * videoId + 1);
-
-      const videoUrl = `https://sitwatch.net/watch/${randomVideoId}`;
-      await interaction.reply({ content: `Rasgere açılan video: ${videoUrl}`, ephemeral: true });
-    }
-    return;
-  }
-
   if (!interaction.isCommand()) return;
 
   const command = client.commands.get(interaction.commandName);
