@@ -53,7 +53,7 @@ client.on('interactionCreate', async interaction => {
     await command.execute(interaction);
   } catch (error) {
     console.error('❌ Komut çalıştırılırken hata oluştu:', error);
-    await interaction.reply({ content: '❌ Bir hata oluştu!', ephemeral: true });
+    await interaction.reply({ content: '❌ Bir hata oluştu!', error, ephemeral: true });
   }
 });
 
